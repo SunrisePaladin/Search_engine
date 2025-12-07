@@ -4,17 +4,22 @@
 
 #include "../Headers/ConverterJSON.h"
 #include "../Headers/SearchServer.h"
-const std::string ConverterJSON::APP_VERSION = "1.0";
+const std::string ConverterJSON::APP_VERSION = "1.0"; //Для теста можно взять 1.0
 
 ConverterJSON::ConverterJSON(
-    const std::string& config_path,
-    const std::string& requests_path,
-    const std::string& answers_path)
-    : m_config_path(config_path),
-      m_requests_path(requests_path),
-      m_answers_path(answers_path),
-      m_max_responses(5)
+    const std::string& json_path_prefix,
+    const std::string& dbase_path_prefix,
+    const std::string& config_name,
+    const std::string& requests_name,
+    const std::string& answers_name)
+    : m_config_path(json_path_prefix+config_name),
+      m_requests_path(json_path_prefix+requests_name),
+      m_answers_path(json_path_prefix+answers_name),
+      js_prefix(json_path_prefix),
+      db_prefix(dbase_path_prefix),
+      m_max_responses(10)
 {
+    //set_path();
     // Загрузка и проверка конфигурации происходит при создании объекта
     system_load_config();
 }
@@ -40,7 +45,7 @@ void ConverterJSON::system_load_config() {
 
     m_name = config_data.value("name", "");
     m_version = config_data.value("version", "");
-    m_max_responses = config_data.value("max_responses", 5);
+    m_max_responses = config_data.value("max_responses", 10);
 
     if (!m_name.empty()) {
         std::cout << "Starting " << m_name << "..." << std::endl;

@@ -1,0 +1,12 @@
+{
+    "config": {
+        "max_responses": 10,
+        "name": "SkillboxSearchEngine",
+        "version": "1.0"
+    },
+    "files": [
+        "../Database/file001.txt",
+        "../Database/file002.txt",
+        "../Database/file003.txt"
+    ]
+}

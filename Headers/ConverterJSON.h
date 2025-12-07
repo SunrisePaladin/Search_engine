@@ -33,9 +33,11 @@ struct RequestAnswer {
 class ConverterJSON {
     public:
         ConverterJSON(
-            const std::string& config_path = "config.json",
-            const std::string& requests_path = "requests.json",
-            const std::string& answers_path = "answers.json"
+            const std::string& json_path_prefix,
+            const std::string& dbase_path_prefix,
+            const std::string& config_name = "config.json",
+            const std::string& requests_name = "requests.json",
+            const std::string& answers_name = "answers.json"
         );
 
     std::vector<std::string> GetTextDocuments();
@@ -59,6 +61,8 @@ private:
     std::string m_config_path;
     std::string m_requests_path;
     std::string m_answers_path;
+
+    std::string js_prefix, db_prefix;
 
     // Данные из конфигурации
     std::string m_name;

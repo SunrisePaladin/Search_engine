@@ -11,7 +11,8 @@
 
 namespace fs = std::filesystem;
 
-extern void TestWord(InvertedIndex& index, const std::string& word);
+//extern void TestWord(InvertedIndex& index, const std::string& word);
+extern void autotest();
 
 //функция для форматирования текста
 void PrintIndex(const std::map<std::string, std::vector<Entry>>& index) {
@@ -36,36 +37,53 @@ void PrintIndex(const std::map<std::string, std::vector<Entry>>& index) {
 
 
 void setup_test_environment() {
-    // Создадим директорию 'resources'
-    fs::create_directory("resources");
+    fs::path db_path("../Database/"), json_path("../Json_documents/");
 
-    // Создадим файлы
-    std::ofstream("resources/file001.txt") << "это первый тестовый файл";
-    std::ofstream("resources/file002.txt") << "это второй тестовый файл";
+    // 1. Создадим директорию 'tmp_database', если нет источника для поиска
+    if (!fs::exists(db_path)) {
+        fs::create_directory("../Database");
 
-    // 1. Создадим пример config.json
-    json config_content = {
-        {"config", {
-            {"name", "SkillboxSearchEngine"},
-            {"version", "1.0"},
-            {"max_responses", 5}
-        }},
-        {"files", {
-            "resources/file001.txt",
-            "resources/file002.txt"
-            //"resources/file_does_not_exist.txt" // Несуществующий файл
-        }}
-    };
-    std::ofstream("config.json") << std::setw(4) << config_content;
+        // Создадим файлы в tmp_database
+        std::ofstream(db_path.string()+"file001.txt") << "это первый тестовый файл";
+        std::ofstream(db_path.string()+"file002.txt") << "это второй тестовый файл";
+    }
 
-    // 2. Создадим пример requests.json
-    json requests_content = {
-        {"requests", {
-            "первый тестовый",
-            "второй файл"
-        }}
-    };
-    std::ofstream("requests.json") << std::setw(4) << requests_content;
+    if (!fs::exists(json_path)) fs::create_directory(json_path);
+
+    // 2. Создадим пример config.json, если его ещё нет. Иначе открываем существующий
+    if (!fs::exists(json_path.string()+"/config.json")) {
+        json config_content = {
+            {"config", {
+                {"name", "SkillboxSearchEngine"},
+                {"version", "1.0"},
+                {"max_responses", 10}
+            }},
+            {"files", {
+                db_path.string()+"file001.txt",
+                db_path.string()+"file002.txt",
+                db_path.string()+"file003.txt" // Несуществующий файл
+            }}
+        };
+        std::ofstream(json_path.string()+"config.json") << std::setw(4) << config_content;
+    }
+    else {
+        std::cout << "Файл конфигурации найден!" << std::endl;
+    }
+
+    // 3. Аналогично с конфигурацией создадим пример requests.json
+    if (!fs::exists(json_path.string()+"requests.json")) {
+        json requests_content = {
+            {"requests", {
+                "первый тестовый",
+                "второй файл",
+                "невозможный запрос"
+            }}
+        };
+        std::ofstream(json_path.string()+"requests.json") << std::setw(4) << requests_content;
+    }
+    else {
+        std::cout << "Файл запросов найден!" << std::endl;
+    }
 }
 
 int main() {
@@ -79,7 +97,7 @@ int main() {
 
     try {
         // 1. Инициализация и загрузка конфигурации
-        ConverterJSON converter;
+        ConverterJSON converter("../Json_documents/", "../Database/"); //Стандартные пути
         std::vector<std::string> docs_content = converter.GetTextDocuments();
         std::vector<std::string> requests = converter.GetRequests();
 
@@ -103,39 +121,7 @@ int main() {
         return 1;
     }
 
-    // 1. Создаем базу документов
-    std::vector<std::string> document_texts = {
-        "milk sugar salt",                     // doc_id = 0
-        "milk a milk b milk c milk d",         // doc_id = 1
-        "salt water and sugar"                 // doc_id = 2
-    };
-
-    // 2. Создаем экземпляр класса
-    InvertedIndex index;
-
-    // 3. Обновляем базу (это запустит многопоточную индексацию)
-    index.UpdateDocumentBase(document_texts);
-
-    // 4. Тестируем новый интерфейс GetWordCount
-    std::cout << "\n--- Testing GetWordCount ---" << std::endl;
-
-    TestWord(index, "milk");   // Ожидается {0, 1}, {1, 4}
-    TestWord(index, "sugar");  // Ожидается {0, 1}, {2, 1}
-    TestWord(index, "a");      // Ожидается {1, 1}
-    TestWord(index, "water");  // Ожидается {2, 1}
-    TestWord(index, "banana"); // Ожидается "Word not found"
-
-    // 5. Тестируем оператор == (для GTest)
-    Entry e1(0, 1);
-    Entry e2(0, 1);
-    Entry e3(1, 4);
-
-    if (e1 == e2) {
-        std::cout << "\n(Test OK: e1 == e2)" << std::endl;
-    }
-    if (!(e1 == e3)) {
-        std::cout << "(Test OK: e1 != e3)" << std::endl;
-    }
+    autotest();
 
     system("pause");
     return 0;
