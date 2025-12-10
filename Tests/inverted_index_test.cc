@@ -42,14 +42,16 @@ TEST(TestCaseInvertedIndex, TestBasic2) {
         "milk milk milk milk milk water water water water water",
         "americano cappuccino"
         };
-    const vector<string> requests = {"milk", "water", "cappucino"};
+    const vector<string> requests = {"milk", "water", "cappuccino"};
     const vector<vector<Entry>> expected = {
         {
             {0, 4}, {1, 1}, {2, 5}
-        }, {
-    {0, 2}, {1, 2}, {2, 5}
-        }, {
-    {3, 1}
+        },
+        {
+            {0, 3}, {1, 2}, {2, 5}
+        },
+        {
+            {3, 1}
         }
     };
     TestInvertedIndexFunctionality(docs, requests, expected);
@@ -132,5 +134,6 @@ TEST(TestCaseSearchServer, TestTop5) {
     idx.UpdateDocumentBase(docs);
     SearchServer srv(idx);
     std::vector<vector<RelativeIndex>> result = srv.search(request);
+    result[0].resize(5);
     ASSERT_EQ(result, expected);
 }

@@ -1,17 +1,35 @@
 {
     "answers": {
         "request001": {
-            "docid": 0,
-            "rank": 1.0,
+            "relevance": [
+                {
+                    "docid": 0,
+                    "rank": 1.0
+                },
+                {
+                    "docid": 1,
+                    "rank": 0.5
+                }
+            ],
             "result": "true"
         },
         "request002": {
-            "docid": 1,
-            "rank": 1.0,
+            "relevance": [
+                {
+                    "docid": 1,
+                    "rank": 1.0
+                },
+                {
+                    "docid": 0,
+                    "rank": 0.5
+                }
+            ],
             "result": "true"
         },
         "request003": {
-            "result": "false"
+            "docid": 2,
+            "rank": 1.0,
+            "result": "true"
         },
         "request004": {
             "docid": 2,

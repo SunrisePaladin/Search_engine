@@ -71,66 +71,14 @@ std::map<size_t, size_t> SearchServer::_calculate_absolute_relevance(const std::
         return final_doc_relevance;
     }
 
-    // 1. Инициализация (Шаг 4): По первому, самому редкому слову находим все документы.
-    const std::string& rare_word = unique_words[0];
+    for (const std::string& word : unique_words) {
+        std::vector<Entry> word_entries = _index.GetWordCount(word);
 
-    std::set<size_t> common_doc_ids;
-
-    std::vector<Entry> rare_word_entries = _index.GetWordCount(rare_word);
-
-    // Если самое редкое слово не найдено, нет смысла продолжать (Требование 6)
-    if (rare_word_entries.empty()) {
-        return final_doc_relevance;
-    }
-
-    for (const Entry& entry : rare_word_entries) {
-        final_doc_relevance[entry.doc_id] = entry.count;
-        common_doc_ids.insert(entry.doc_id);
-    }
-
-    // 2. Итеративное сужение и расчет (Шаг 5): По каждому следующему слову.
-    for (size_t i = 1; i < unique_words.size(); ++i) {
-        const std::string& current_word = unique_words[i];
-
-        std::set<size_t> current_word_doc_ids;
-        std::vector<Entry> current_entries = _index.GetWordCount(current_word);
-
-        // 2.1. Формируем doc_ids для текущего слова, а также обновляем релевантность
-        for (const Entry& entry : current_entries) {
-            current_word_doc_ids.insert(entry.doc_id);
-
-            if (common_doc_ids.count(entry.doc_id)) {
-                final_doc_relevance[entry.doc_id] += entry.count;
-            }
-        }
-
-        // 2.2. Фильтрация: Находим пересечение (новые общие документы)
-        std::set<size_t> intersection_doc_ids;
-        for (size_t doc_id : common_doc_ids) {
-            if (current_word_doc_ids.count(doc_id)) {
-                intersection_doc_ids.insert(doc_id);
-            }
-        }
-        common_doc_ids = std::move(intersection_doc_ids);
-
-        // 2.3. Удаляем из final_doc_relevance те, которые больше не соответствуют (не содержат текущее слово)
-        // Итерируемся по копии keys, чтобы безопасно удалить из map
-        std::vector<size_t> docs_to_remove;
-        for (const auto& pair : final_doc_relevance) {
-            if (common_doc_ids.find(pair.first) == common_doc_ids.end()) {
-                docs_to_remove.push_back(pair.first);
-            }
-        }
-        for (size_t doc_id : docs_to_remove) {
-            final_doc_relevance.erase(doc_id);
-        }
-
-        if (common_doc_ids.empty()) {
-            return {};
+        for (const Entry& entry : word_entries) {
+            final_doc_relevance[entry.doc_id] += entry.count;
         }
     }
 
-    // 3. Возвращаем абсолютную релевантность только для тех документов,
     return final_doc_relevance;
 }
 

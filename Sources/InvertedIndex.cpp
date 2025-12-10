@@ -79,36 +79,6 @@ void InvertedIndex::_index_one_document(size_t doc_id) {
     }
 }
 
-/*
-void InvertedIndex::system_index_documents() {
-    for (size_t d = 0; d < docs.size(); ++d) {
-
-        std::map<std::string, size_t> local_word_counts;
-
-        // Разделяем текст на слова
-        std::vector<std::string> words = _split_text(docs[d]);
-
-        // Считаем частоту слов в этом документе
-        for (const std::string& word : words) {
-            if (!word.empty()) {
-                local_word_counts[word]++;
-            }
-        }
-
-        // Обновляем главный freq_dictionary и переносим данные из local_word_counts в freq_dictionary
-        for (const auto& pair : local_word_counts) {
-            const std::string& word = pair.first;
-            const size_t count = pair.second;
-
-            Entry new_entry(d, count);
-            freq_dictionary[word].push_back(new_entry);
-        }
-    }
-    std::cout << "Indexing complete. " << freq_dictionary.size()
-              << " unique words found." << std::endl;
-}
-*/
-
 std::vector<std::string> InvertedIndex::_split_text(const std::string& text) const {
     std::vector<std::string> words;
     std::stringstream ss(text);

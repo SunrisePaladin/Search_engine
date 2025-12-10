@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 4.0)
 project(Search_engine)
 
-cmake_minimum_required(VERSION 4.0)
-project(search_engine)
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(JSON_BuildTests OFF CACHE INTERNAL "")
@@ -30,7 +27,7 @@ add_library(search_engine_core STATIC
         Headers/SearchServer.h
         Headers/ConverterJSON.h
         Headers/InvertedIndex.h
-        Tests/module_test.cpp
+        Tests/word_test.cpp
 )
 
 #add_subdirectory(nlohmann_json)
@@ -46,7 +43,7 @@ target_link_libraries(Search_engine PRIVATE search_engine_core)
 enable_testing()
 
 add_executable(my_unit_tests
-        Tests/google_test.cc
+        Tests/inverted_index_test.cc
 )
 
 target_link_libraries(my_unit_tests
