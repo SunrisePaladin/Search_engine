@@ -42,15 +42,15 @@ target_link_libraries(Search_engine PRIVATE search_engine_core)
 
 enable_testing()
 
-add_executable(my_unit_tests
+add_executable(my_gtests
         Tests/inverted_index_test.cc
 )
 
-target_link_libraries(my_unit_tests
+target_link_libraries(my_gtests
         PRIVATE
         search_engine_core
         GTest::gtest_main
 )
 
 include(GoogleTest)
-gtest_discover_tests(my_unit_tests)
+gtest_discover_tests(my_gtests)
