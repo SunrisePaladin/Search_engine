@@ -7,6 +7,12 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+#include <algorithm>
+
+bool EntryComparator(const Entry &a, const Entry &b)
+{
+    return a.doc_id < b.doc_id;
+}
 
 void InvertedIndex::UpdateDocumentBase(const std::vector<std::string>& input_docs) {
     // 1. Очищаем старые данные
@@ -76,6 +82,7 @@ void InvertedIndex::_index_one_document(size_t doc_id) {
         Entry new_entry(doc_id, count);
 
         freq_dictionary[word].push_back(new_entry);
+        sort(freq_dictionary[word].begin(), freq_dictionary[word].end(), EntryComparator);
     }
 }
 
